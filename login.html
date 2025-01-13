@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  =<link rel="stylesheet" href="login.css">
+</head>
+<body class="gradient-bg">
+  <!-- Notification -->
+  <div id="notification" class="notification bg-white shadow-xl z-50 hidden p-4 rounded-xl">
+    <div class="flex items-center space-x-2">
+      <svg id="notificationIcon" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+      </svg>
+      <span id="notificationText" class="font-medium"></span>
+    </div>
+  </div>
+
+  <div class="min-h-screen flex items-center justify-center p-4">
+    <div class="card-container">
+      <div class="card">
+        <!-- Face avant (Message d'accueil) -->
+        <div class="card-face card-front flex items-center justify-center p-8">
+          <div class="text-center space-y-8">
+            <div class="floating">
+              <svg class="w-24 h-24 mx-auto text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-4xl font-bold text-gray-800 mb-4">Bienvenue sur notre plateforme</h1>
+              <p class="text-xl text-gray-600 mb-8">Découvrez une nouvelle façon de gérer le feffi en toute simplicité</p>
+            </div>
+            <button id="showLoginBtn" class="btn-success text-white px-8 py-3 rounded-xl text-lg font-medium">
+              Commencer à travailler
+            </button>
+          </div>
+        </div>
+
+        <!-- Face arrière (Formulaire) -->
+        <div class="card-face card-back">
+          <div class="w-full h-full flex items-center justify-center p-8">
+            <div class="w-96 space-y-6">
+              <div class="text-center space-y-2">
+                <h2 class="text-3xl font-bold text-gray-800" id="formTitle">Login</h2>
+                <p class="text-gray-500">Connectez-vous à votre compte</p>
+              </div>
+
+              <form id="authForm" class="space-y-5">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">
+                    <span class="flex items-center space-x-2">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <span>Nom d'utilisateur</span>
+                    </span>
+                  </label>
+                  <input type="text" id="username" required
+                    class="input-animated block w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">
+                    <span class="flex items-center space-x-2">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                      <span>Mot de passe</span>
+                    </span>
+                  </label>
+                  <input type="password" id="password" required
+                    class="input-animated block w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+
+                <button type="submit" 
+                  class="w-full py-3 px-4 rounded-xl btn-success text-white font-medium shadow-lg shadow-green-500/30 hover:shadow-green-500/40">
+                  Se connecter
+                </button>
+              </form>
+
+              <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                  <div class="w-full border-t border-gray-200"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                  <span class="px-2 bg-white text-gray-500">ou</span>
+                </div>
+              </div>
+
+              <div class="text-center space-y-4">
+                <p>
+                  <a href="#" id="toggleForm" class="text-green-600 hover:text-green-700 font-medium transition-colors duration-200">
+                    Créer un compte
+                  </a>
+                </p>
+                <button id="backToWelcome" class="text-gray-500 hover:text-gray-700 text-sm">
+                  Retour à l'accueil
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="login.js"></script>
+</body>
+</html>

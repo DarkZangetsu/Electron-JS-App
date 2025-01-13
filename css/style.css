@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Scrollbar personnalisé */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Animation pour les cartes */
+.stat-card {
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Animation pour la sidebar */
+.sidebar-item {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.sidebar-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background-color: #16a34a;
+  transform: scaleY(0);
+  transition: transform 0.2s ease;
+}
+
+.sidebar-item:hover::before,
+.sidebar-item.active::before {
+  transform: scaleY(1);
+}
