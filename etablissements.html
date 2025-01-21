@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>FEFFI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar améliorée -->
+        <div class="fixed inset-y-0 left-0 w-72 bg-white shadow-xl z-30">
+            <!-- Logo section -->
+            <div class="flex items-center justify-center h-20 bg-gradient-to-r from-green-600 to-green-500">
+                <span class="text-white text-2xl font-bold tracking-wider">FEFFI</span>
+            </div>
+
+            <!-- Sidebar items -->
+            <div class="overflow-y-auto h-[calc(100vh-12rem)] pb-20">
+                <!-- Administration -->
+                <div class="px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    Administration
+                </div>
+                <a href="#"
+                    class="sidebar-item active flex items-center px-6 py-3.5 text-gray-700 hover:bg-green-50 hover:text-green-700 group">
+                    <span class="mr-4 text-lg text-gray-400 group-hover:text-green-500"><i
+                            class="fas fa-home"></i></span>
+                    <span class="font-medium">Tableau de bord</span>
+                </a>
+                <a href="etablissements.html"
+                    class="sidebar-item flex items-center px-6 py-3.5 text-gray-700 hover:bg-green-50 hover:text-green-700 group">
+                    <span class="mr-4 text-lg text-gray-400 group-hover:text-green-500"><i
+                            class="fas fa-school"></i></span>
+                    <span class="font-medium">Établissement</span>
+                </a>
+                <a href="mandataires.html"
+                    class="sidebar-item flex items-center px-6 py-3.5 text-gray-700 hover:bg-green-50 hover:text-green-700 group">
+                    <span class="mr-4 text-lg text-gray-400 group-hover:text-green-500"><i
+                            class="fas fa-user-tie"></i></span>
+                    <span class="font-medium">Mandataires</span>
+                </a>
+
+                <!-- Circonscriptions -->
+                <div class="px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-4">
+                    Circonscriptions
+                </div>
+                <a href="circonscriptions.html"
+                    class="sidebar-item flex items-center px-6 py-3.5 text-gray-700 hover:bg-green-50 hover:text-green-700 group">
+                    <span class="mr-4 text-lg text-gray-400 group-hover:text-green-500"><i
+                            class="fas fa-building"></i></span>
+                    <span class="font-medium">Circonscriptions</span>
+                </a>
+
+                <!-- Transactions -->
+                <div class="px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-4">
+                    Transactions et caisse
+                </div>
+                <a href="caisse.html"
+                    class="sidebar-item flex items-center px-6 py-3.5 text-gray-700 hover:bg-green-50 hover:text-green-700 group">
+                    <span class="mr-4 text-lg text-gray-400 group-hover:text-green-500"><i
+                            class="fas fa-cash-register"></i></span>
+                    <span class="font-medium">Caisse École</span>
+                </a>
+
+                <!-- Planification -->
+                <div class="px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-4">
+                    Planification
+                </div>
+                <a href="rapport.html"
+                    class="sidebar-item flex items-center px-6 py-3.5 text-gray-700 hover:bg-green-50 hover:text-green-700 group">
+                    <span class="mr-4 text-lg text-gray-400 group-hover:text-green-500"><i
+                            class="fas fa-calendar-alt"></i></span>
+                    <span class="font-medium">Planification PEC</span>
+                </a>
+
+                <!-- Paramètres -->
+                <div class="px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-4">
+                    Paramètres
+                </div>
+                <a href="#"
+                    class="sidebar-item flex items-center px-6 py-3.5 text-gray-700 hover:bg-green-50 hover:text-green-700 group">
+                    <span class="mr-4 text-lg text-gray-400 group-hover:text-green-500"><i
+                            class="fas fa-users-cog"></i></span>
+                    <span class="font-medium">Utilisateurs</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 ml-72">
+            <!-- Navbar amélioré -->
+            <nav class="bg-white h-20 flex items-center justify-between px-8 shadow-sm sticky top-0 z-20">
+                <div class="flex items-center">
+                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+                        <i class="fas fa-bars text-xl text-gray-500"></i>
+                    </button>
+                    <div class="ml-6">
+                        <h1 class="text-xl font-semibold text-gray-800">Tableau de bord</h1>
+                        <p class="text-sm text-gray-500">Bienvenue dans votre espace administratif</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <button class="relative p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+                        <i class="fas fa-bell text-xl text-gray-500"></i>
+                        <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+                        <i class="fas fa-cog text-xl text-gray-500"></i>
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Content -->
+            <div class="p-8">
+                <!-- Header avec bouton d'ajout -->
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">
+                            <i class="fas fa-school text-green-600 mr-2"></i>
+                            Gestion des Établissements
+                        </h2>
+                        <p class="text-gray-600">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Gérez les établissements scolaires
+                        </p>
+                    </div>
+                    <button id="btnAdd"
+                        class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200">
+                        <i class="fas fa-plus mr-2"></i> Ajouter un établissement
+                    </button>
+                </div>
+
+                <!-- Barre de recherche -->
+                <div class="mb-6">
+                    <div class="relative">
+                        <input type="text" id="searchInput"
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+                            placeholder="Rechercher un établissement...">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tableau des établissements -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <i class="fas fa-hashtag mr-2"></i>
+                                    Code
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <i class="fas fa-school mr-2"></i>
+                                    Nom
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <i class="fas fa-building mr-2"></i>
+                                    DREN
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <i class="fas fa-city mr-2"></i>
+                                    CISCO
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <i class="fas fa-map-marker-alt mr-2"></i>
+                                    ZAP
+                                </th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <i class="fas fa-cog mr-2"></i>
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="etablissementTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Les données seront injectées ici -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Modal Formulaire -->
+                <div id="formModal"
+                    class="fixed inset-0 bg-black/50 backdrop-blur-sm items-center justify-center z-50 hidden">
+                    <div class="bg-white rounded-2xl shadow-xl w-full max-w-3xl m-auto mt-10 overflow-hidden">
+                        <!-- En-tête du modal -->
+                        <div class="bg-gradient-to-r from-green-600 to-green-500 p-6">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-2xl font-semibold text-white" id="modalTitle">Ajouter un établissement
+                                </h3>
+                                <button type="button" id="btnCloseModal"
+                                    class="text-white/80 hover:text-white transition-colors">
+                                    <i class="fas fa-times text-xl"></i>
+                                </button>
+                            </div>
+                            <p class="text-white/80 mt-2">Remplissez les informations de l'établissement</p>
+                        </div>
+
+                        <!-- Corps du formulaire -->
+                        <form id="etablissementForm" class="p-6">
+                            <input type="hidden" id="etablissementId">
+
+                            <!-- Indicateur de progression -->
+                            <div class="flex items-center space-x-4 mb-8">
+                                <div class="flex-1">
+                                    <div class="h-2 bg-gray-200 rounded-full">
+                                        <div id="progressBar"
+                                            class="h-2 bg-green-500 rounded-full transition-all duration-300"
+                                            style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <span id="progressText" class="text-sm text-gray-500">0%</span>
+                            </div>
+
+                            <!-- Champs du formulaire -->
+                            <div class="space-y-6">
+                                <!-- Section Localisation -->
+                                <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                    <h4 class="text-sm font-semibold text-gray-700 mb-4">
+                                        <i class="fas fa-map-marker-alt text-green-500 mr-2"></i>
+                                        Localisation
+                                    </h4>
+                                    <div class="grid grid-cols-3 gap-4">
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-medium text-gray-700">DREN</label>
+                                            <div class="relative">
+                                                <select id="drenSelect"
+                                                    class="w-full rounded-lg border-gray-300 pl-10 pr-4 py-2 focus:border-green-500 focus:ring-green-500"
+                                                    required>
+                                                    <option value="">Sélectionner</option>
+                                                </select>
+                                                <div
+                                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <i class="fas fa-building text-gray-400"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-medium text-gray-700">CISCO</label>
+                                            <div class="relative">
+                                                <select id="ciscoSelect"
+                                                    class="w-full rounded-lg border-gray-300 pl-10 pr-4 py-2 focus:border-green-500 focus:ring-green-500"
+                                                    required>
+                                                    <option value="">Sélectionner</option>
+                                                </select>
+                                                <div
+                                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <i class="fas fa-city text-gray-400"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-medium text-gray-700">ZAP</label>
+                                            <div class="relative">
+                                                <select id="zapSelect"
+                                                    class="w-full rounded-lg border-gray-300 pl-10 pr-4 py-2 focus:border-green-500 focus:ring-green-500"
+                                                    required>
+                                                    <option value="">Sélectionner</option>
+                                                </select>
+                                                <div
+                                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <i class="fas fa-map-signs text-gray-400"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Section Information -->
+                                <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                    <h4 class="text-sm font-semibold text-gray-700 mb-4">
+                                        <i class="fas fa-info-circle text-green-500 mr-2"></i>
+                                        Informations de l'établissement
+                                    </h4>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-medium text-gray-700">Code
+                                                établissement</label>
+                                            <div class="relative">
+                                                <input type="text" id="codeInput"
+                                                    class="w-full rounded-lg border-gray-300 pl-10 pr-4 py-2 focus:border-green-500 focus:ring-green-500"
+                                                    placeholder="Ex: ETB001" required>
+                                                <div
+                                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <i class="fas fa-hashtag text-gray-400"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-span-2 space-y-2">
+                                            <label class="block text-sm font-medium text-gray-700">Nom de
+                                                l'établissement</label>
+                                            <div class="relative">
+                                                <input type="text" id="nomInput"
+                                                    class="w-full rounded-lg border-gray-300 pl-10 pr-4 py-2 focus:border-green-500 focus:ring-green-500"
+                                                    placeholder="Entrez le nom complet de l'établissement" required>
+                                                <div
+                                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <i class="fas fa-school text-gray-400"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Boutons d'action -->
+                            <div class="mt-8 flex items-center justify-end space-x-4">
+                                <button type="button" id="btnCancel"
+                                    class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center">
+                                    <i class="fas fa-times mr-2"></i>
+                                    Annuler
+                                </button>
+                                <button type="submit"
+                                    class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center">
+                                    <i class="fas fa-save mr-2"></i>
+                                    Enregistrer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script javascripts -->
+    <script src="js/script.js"></script>
+    <script src="js/etablissements.js"></script>
+</body>
+
+</html>

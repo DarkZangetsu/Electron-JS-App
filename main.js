@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcryptjs');
+const { dialog } = require('electron');
 
 let mainWindow;
 const db = new sqlite3.Database('feffi.db');
@@ -40,10 +41,14 @@ db.serialize(() => {
   // Table Établissement
   db.run(`CREATE TABLE IF NOT EXISTS etablissement (
     id TEXT PRIMARY KEY,
+    dren_id  TEXT NOT NULL,
+    cisco_id TEXT NOT NULL, 
     zap_id TEXT NOT NULL,
     code TEXT NOT NULL,
     nom TEXT NOT NULL,
-    FOREIGN KEY (zap_id) REFERENCES zap(id)
+    FOREIGN KEY (zap_id) REFERENCES zap(id),
+    FOREIGN KEY (cisco_id) REFERENCES cisco(id),
+    FOREIGN KEY (dren_id) REFERENCES dren(id)
   )`);
 
   // Table Mandataire
@@ -78,6 +83,9 @@ db.serialize(() => {
   // Table Rapport
   db.run(`CREATE TABLE IF NOT EXISTS rapport (
     id TEXT PRIMARY KEY,
+    dren_id TEXT NOT NULL,
+    cisco_id TEXT NOT NULL,
+    zap_id TEXT NOT NULL,
     etablissement_id TEXT NOT NULL,
     date DATE NOT NULL,
     situation TEXT NOT NULL,
@@ -89,6 +97,9 @@ db.serialize(() => {
     source_financement TEXT NOT NULL,
     executeur TEXT NOT NULL,
     superviseur TEXT NOT NULL,
+    FOREIGN KEY (dren_id) REFERENCES dren(id),
+    FOREIGN KEY (cisco_id) REFERENCES cisco(id),
+    FOREIGN KEY (zap_id) REFERENCES zap(id),
     FOREIGN KEY (etablissement_id) REFERENCES etablissement(id)
   )`);
 });
@@ -98,8 +109,8 @@ function createWindow() {
     width: 1920,
     height: 1080,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false
+      nodeIntegration: true,  
+      contextIsolation: false, 
     }
   });
 
@@ -329,9 +340,10 @@ ipcMain.on('delete-zap', (event, id) => {
 
 // CRUD Operations for Etablissement
 ipcMain.on('create-etablissement', (event, data) => {
-  const { id, zap_id, code, nom } = data;
-  db.run('INSERT INTO etablissement (id, zap_id, code, nom) VALUES (?, ?, ?, ?)',
-    [id, zap_id, code, nom],
+  const { id, dren_id, cisco_id, zap_id, code, nom } = data;
+  db.run(
+    'INSERT INTO etablissement (id, dren_id, cisco_id, zap_id, code, nom) VALUES (?, ?, ?, ?, ?, ?)',
+    [id, dren_id, cisco_id, zap_id, code, nom],
     function(err) {
       event.reply('create-etablissement-response', {
         success: !err,
@@ -344,23 +356,29 @@ ipcMain.on('create-etablissement', (event, data) => {
 
 ipcMain.on('read-etablissement', (event) => {
   db.all(`
-    SELECT etablissement.*, zap.nom as zap_nom 
-    FROM etablissement 
-    JOIN zap ON etablissement.zap_id = zap.id`,
-    (err, rows) => {
-      event.reply('read-etablissement-response', {
-        success: !err,
-        data: rows,
-        error: err
-      });
-    }
-  );
+    SELECT 
+      e.*,
+      d.nom as dren_nom,
+      c.nom as cisco_nom,
+      z.nom as zap_nom
+    FROM etablissement e
+    JOIN dren d ON e.dren_id = d.id
+    JOIN cisco c ON e.cisco_id = c.id
+    JOIN zap z ON e.zap_id = z.id
+  `, (err, rows) => {
+    event.reply('read-etablissement-response', {
+      success: !err,
+      data: rows,
+      error: err
+    });
+  });
 });
 
 ipcMain.on('update-etablissement', (event, data) => {
-  const { id, zap_id, code, nom } = data;
-  db.run('UPDATE etablissement SET zap_id = ?, code = ?, nom = ? WHERE id = ?',
-    [zap_id, code, nom, id],
+  const { id, dren_id, cisco_id, zap_id, code, nom } = data;
+  db.run(
+    'UPDATE etablissement SET dren_id = ?, cisco_id = ?, zap_id = ?, code = ?, nom = ? WHERE id = ?',
+    [dren_id, cisco_id, zap_id, code, nom, id],
     function(err) {
       event.reply('update-etablissement-response', {
         success: !err,
@@ -372,17 +390,17 @@ ipcMain.on('update-etablissement', (event, data) => {
 });
 
 ipcMain.on('delete-etablissement', (event, id) => {
-  db.run('DELETE FROM etablissement WHERE id = ?',
-    [id],
-    function(err) {
-      event.reply('delete-etablissement-response', {
-        success: !err,
-        message: err ? 'Error deleting établissement' : 'Établissement deleted successfully',
-        error: err
-      });
-    }
-  );
+  db.run('DELETE FROM etablissement WHERE id = ?', [id], function(err) {
+    event.reply('delete-etablissement-response', {
+      success: !err,
+      message: err ? 'Error deleting établissement' : 'Établissement deleted successfully',
+      error: err
+    });
+  });
 });
+
+
+
 
 // CRUD Operations for Mandataire
 ipcMain.on('create-mandataire', (event, data) => {
@@ -538,23 +556,24 @@ ipcMain.on('delete-caisse', (event, id) => {
 });
 
 // CRUD Operations for Rapport
+// CRUD Operations for Rapport
 ipcMain.on('create-rapport', (event, data) => {
   const {
-    id, etablissement_id, date, situation, activites,
-    fonction, prix_unitaire, quantite, total,
-    source_financement, executeur, superviseur
+    id, dren_id, cisco_id, zap_id, etablissement_id, date, 
+    situation, activites, fonction, prix_unitaire, 
+    quantite, total, source_financement, executeur, superviseur
   } = data;
-  
+
   db.run(`
     INSERT INTO rapport (
-      id, etablissement_id, date, situation, activites,
-      fonction, prix_unitaire, quantite, total,
-      source_financement, executeur, superviseur
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      id, dren_id, cisco_id, zap_id, etablissement_id, date, 
+      situation, activites, fonction, prix_unitaire, 
+      quantite, total, source_financement, executeur, superviseur
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
-      id, etablissement_id, date, situation, activites,
-      fonction, prix_unitaire, quantite, total,
-      source_financement, executeur, superviseur
+      id, dren_id, cisco_id, zap_id, etablissement_id, date, 
+      situation, activites, fonction, prix_unitaire, 
+      quantite, total, source_financement, executeur, superviseur
     ],
     function(err) {
       event.reply('create-rapport-response', {
@@ -568,8 +587,16 @@ ipcMain.on('create-rapport', (event, data) => {
 
 ipcMain.on('read-rapport', (event) => {
   db.all(`
-    SELECT rapport.*, etablissement.nom as etablissement_nom
+    SELECT 
+      rapport.*, 
+      dren.nom AS dren_nom, 
+      cisco.nom AS cisco_nom, 
+      zap.nom AS zap_nom, 
+      etablissement.nom AS etablissement_nom
     FROM rapport
+    JOIN dren ON rapport.dren_id = dren.id
+    JOIN cisco ON rapport.cisco_id = cisco.id
+    JOIN zap ON rapport.zap_id = zap.id
     JOIN etablissement ON rapport.etablissement_id = etablissement.id`,
     (err, rows) => {
       event.reply('read-rapport-response', {
@@ -581,24 +608,26 @@ ipcMain.on('read-rapport', (event) => {
   );
 });
 
+
 ipcMain.on('update-rapport', (event, data) => {
   const {
-    id, etablissement_id, date, situation, activites,
-    fonction, prix_unitaire, quantite, total,
-    source_financement, executeur, superviseur
+    id, dren_id, cisco_id, zap_id, etablissement_id, date, 
+    situation, activites, fonction, prix_unitaire, 
+    quantite, total, source_financement, executeur, superviseur
   } = data;
-  
+
   db.run(`
     UPDATE rapport 
-    SET etablissement_id = ?, date = ?, situation = ?,
-        activites = ?, fonction = ?, prix_unitaire = ?,
-        quantite = ?, total = ?, source_financement = ?,
+    SET dren_id = ?, cisco_id = ?, zap_id = ?, 
+        etablissement_id = ?, date = ?, situation = ?, 
+        activites = ?, fonction = ?, prix_unitaire = ?, 
+        quantite = ?, total = ?, source_financement = ?, 
         executeur = ?, superviseur = ?
     WHERE id = ?`,
     [
-      etablissement_id, date, situation, activites,
-      fonction, prix_unitaire, quantite, total,
-      source_financement, executeur, superviseur, id
+      dren_id, cisco_id, zap_id, etablissement_id, date, 
+      situation, activites, fonction, prix_unitaire, 
+      quantite, total, source_financement, executeur, superviseur, id
     ],
     function(err) {
       event.reply('update-rapport-response', {
@@ -623,105 +652,15 @@ ipcMain.on('delete-rapport', (event, id) => {
   );
 });
 
-// Fonctions utilitaires pour la recherche
 
-// Recherche DREN par nom
-ipcMain.on('search-dren', (event, searchTerm) => {
-  db.all('SELECT * FROM dren WHERE nom LIKE ?',
-    [`%${searchTerm}%`],
-    (err, rows) => {
-      event.reply('search-dren-response', {
-        success: !err,
-        data: rows,
-        error: err
-      });
-    }
-  );
-});
+// Fonctions utilitaires
 
-// Recherche CISCO par DREN
-ipcMain.on('search-cisco-by-dren', (event, drenId) => {
-  db.all('SELECT * FROM cisco WHERE dren_id = ?',
-    [drenId],
-    (err, rows) => {
-      event.reply('search-cisco-by-dren-response', {
-        success: !err,
-        data: rows,
-        error: err
-      });
-    }
-  );
-});
-
-// Recherche ZAP par CISCO
-ipcMain.on('search-zap-by-cisco', (event, ciscoId) => {
-  db.all('SELECT * FROM zap WHERE cisco_id = ?',
-    [ciscoId],
-    (err, rows) => {
-      event.reply('search-zap-by-cisco-response', {
-        success: !err,
-        data: rows,
-        error: err
-      });
-    }
-  );
-});
-
-// Recherche Établissement par ZAP
-ipcMain.on('search-etablissement-by-zap', (event, zapId) => {
-  db.all('SELECT * FROM etablissement WHERE zap_id = ?',
-    [zapId],
-    (err, rows) => {
-      event.reply('search-etablissement-by-zap-response', {
-        success: !err,
-        data: rows,
-        error: err
-      });
-    }
-  );
-});
-
-// Recherche Mandataire par Établissement
-ipcMain.on('search-mandataire-by-etablissement', (event, etablissementId) => {
-  db.all('SELECT * FROM mandataire WHERE etablissement_id = ?',
-    [etablissementId],
-    (err, rows) => {
-      event.reply('search-mandataire-by-etablissement-response', {
-        success: !err,
-        data: rows,
-        error: err
-      });
-    }
-  );
-});
-
-// Recherche Caisse par établissement
-ipcMain.on('search-caisse-by-etablissement', (event, etablissementId) => {
-  db.all('SELECT * FROM caisse WHERE etablissement_id = ?',
-    [etablissementId],
-    (err, rows) => {
-      event.reply('search-caisse-by-etablissement-response', {
-        success: !err,
-        data: rows,
-        error: err
-      });
-    }
-  );
-});
-
-// Recherche Rapport par établissement et période
-ipcMain.on('search-rapport-by-etablissement-date', (event, { etablissementId, startDate, endDate }) => {
-  db.all(`
-    SELECT * FROM rapport 
-    WHERE etablissement_id = ? 
-    AND date BETWEEN ? AND ?`,
-    [etablissementId, startDate, endDate],
-    (err, rows) => {
-      event.reply('search-rapport-by-etablissement-date-response', {
-        success: !err,
-        data: rows,
-        error: err
-      });
-    }
-  );
+ipcMain.on('show-save-dialog', async (event, defaultPath) => {
+  const result = await dialog.showSaveDialog({
+    defaultPath: defaultPath,
+    filters: [
+      { name: 'Excel Files', extensions: ['xlsx'] }
+    ]
+  });
+  event.reply('save-dialog-response', result);
 });

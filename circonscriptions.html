@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>FEFFI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar améliorée -->
+        <div class="fixed inset-y-0 left-0 w-72 bg-white shadow-xl z-30">
+            <!-- Logo section -->
+            <div class="flex items-center justify-center h-20 bg-gradient-to-r from-green-600 to-green-500">
+                <span class="text-white text-2xl font-bold tracking-wider">FEFFI</span>
+            </div>
+
+            <!-- Sidebar items -->
+            <div class="overflow-y-auto h-[calc(100vh-12rem)] pb-20">
+                <!-- Administration -->
+                <div class="px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    Administration
+                </div>
+                <a href="#"
+                    class="sidebar-item active flex items-center px-6 py-3.5 text-gray-700 hover:bg-green-50 hover:text-green-700 group">
+                    <span class="mr-4 text-lg text-gray-400 group-hover:text-green-500"><i
+                            class="fas fa-home"></i></span>
+                    <span class="font-medium">Tableau de bord</span>
+                </a>
+                <a href="etablissements.html"
+                    class="sidebar-item flex items-center px-6 py-3.5 text-gray-700 hover:bg-green-50 hover:text-green-700 group">
+                    <span class="mr-4 text-lg text-gray-400 group-hover:text-green-500"><i
+                            class="fas fa-school"></i></span>
+                    <span class="font-medium">Établissement</span>
+                </a>
+                <a href="mandataires.html"
+                    class="sidebar-item flex items-center px-6 py-3.5 text-gray-700 hover:bg-green-50 hover:text-green-700 group">
+                    <span class="mr-4 text-lg text-gray-400 group-hover:text-green-500"><i
+                            class="fas fa-user-tie"></i></span>
+                    <span class="font-medium">Mandataires</span>
+                </a>
+
+                <!-- Circonscriptions -->
+                <div class="px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-4">
+                    Circonscriptions
+                </div>
+                <a href="circonscriptions.html"
+                    class="sidebar-item flex items-center px-6 py-3.5 text-gray-700 hover:bg-green-50 hover:text-green-700 group">
+                    <span class="mr-4 text-lg text-gray-400 group-hover:text-green-500"><i class="fas fa-building"></i></span>
+                    <span class="font-medium">Circonscriptions</span>
+                </a>
+
+                <!-- Transactions -->
+                <div class="px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-4">
+                    Transactions et caisse
+                </div>
+                <a href="caisse.html"
+                    class="sidebar-item flex items-center px-6 py-3.5 text-gray-700 hover:bg-green-50 hover:text-green-700 group">
+                    <span class="mr-4 text-lg text-gray-400 group-hover:text-green-500"><i
+                            class="fas fa-cash-register"></i></span>
+                    <span class="font-medium">Caisse École</span>
+                </a>
+
+                <!-- Planification -->
+                <div class="px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-4">
+                    Planification
+                </div>
+                <a href="rapport.html"
+                    class="sidebar-item flex items-center px-6 py-3.5 text-gray-700 hover:bg-green-50 hover:text-green-700 group">
+                    <span class="mr-4 text-lg text-gray-400 group-hover:text-green-500"><i
+                            class="fas fa-calendar-alt"></i></span>
+                    <span class="font-medium">Planification PEC</span>
+                </a>
+
+                <!-- Paramètres -->
+                <div class="px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-4">
+                    Paramètres
+                </div>
+                <a href="#"
+                    class="sidebar-item flex items-center px-6 py-3.5 text-gray-700 hover:bg-green-50 hover:text-green-700 group">
+                    <span class="mr-4 text-lg text-gray-400 group-hover:text-green-500"><i
+                            class="fas fa-users-cog"></i></span>
+                    <span class="font-medium">Utilisateurs</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 ml-72">
+            <!-- Navbar amélioré -->
+            <nav class="bg-white h-20 flex items-center justify-between px-8 shadow-sm sticky top-0 z-20">
+                <div class="flex items-center">
+                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+                        <i class="fas fa-bars text-xl text-gray-500"></i>
+                    </button>
+                    <div class="ml-6">
+                        <h1 class="text-xl font-semibold text-gray-800">Tableau de bord</h1>
+                        <p class="text-sm text-gray-500">Bienvenue dans votre espace administratif</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <button class="relative p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+                        <i class="fas fa-bell text-xl text-gray-500"></i>
+                        <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+                        <i class="fas fa-cog text-xl text-gray-500"></i>
+                    </button>
+                </div>
+            </nav>
+
+            <!--Content -->
+            <div class="p-8">
+                <!-- Tabs -->
+                <div class="mb-8 border-b border-gray-200">
+                    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" role="tablist">
+                        <li class="mr-2" role="presentation">
+                            <button class="inline-block p-4 border-b-2 border-green-600 text-green-600 tab-btn active" id="dren-tab" data-tab="dren">DREN</button>
+                        </li>
+                        <li class="mr-2" role="presentation">
+                            <button class="inline-block p-4 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 tab-btn" id="cisco-tab" data-tab="cisco">CISCO</button>
+                        </li>
+                        <li class="mr-2" role="presentation">
+                            <button class="inline-block p-4 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 tab-btn" id="zap-tab" data-tab="zap">ZAP</button>
+                        </li>
+                    </ul>
+                </div>
+        
+                <!-- DREN Section -->
+                <div id="dren-content" class="tab-content active">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-800">Liste des DREN</h2>
+                        <button onclick="openDrenModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Nouveau DREN
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dren-table" class="bg-white divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+        
+                <!-- CISCO Section -->
+                <div id="cisco-content" class="tab-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-800">Liste des CISCO</h2>
+                        <button onclick="openCiscoModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Nouveau CISCO
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">DREN</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cisco-table" class="bg-white divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+        
+                <!-- ZAP Section -->
+                <div id="zap-content" class="tab-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-800">Liste des ZAP</h2>
+                        <button onclick="openZapModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Nouveau ZAP
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">CISCO</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="zap-table" class="bg-white divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+        
+                <!-- Modals -->
+                <!-- DREN Modal -->
+                <div id="dren-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+                    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                        <div class="mt-3">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4" id="dren-modal-title">Ajouter un DREN</h3>
+                            <form id="dren-form">
+                                <input type="hidden" id="dren-form-id">
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="dren-id">
+                                        ID
+                                    </label>
+                                    <input type="text" id="dren-form-input-id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="dren-nom">
+                                        Nom
+                                    </label>
+                                    <input type="text" id="dren-form-nom" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                </div>
+                                <div class="flex justify-end space-x-3">
+                                    <button type="button" onclick="closeDrenModal()" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300">Annuler</button>
+                                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Enregistrer</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- CISCO Modal -->
+                <div id="cisco-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+                    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                        <div class="mt-3">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4" id="cisco-modal-title">Ajouter un CISCO</h3>
+                            <form id="cisco-form">
+                                <input type="hidden" id="cisco-form-id">
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="cisco-id">
+                                        ID
+                                    </label>
+                                    <input type="text" id="cisco-form-input-id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="cisco-dren">
+                                        DREN
+                                    </label>
+                                    <select id="cisco-form-dren" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></select>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="cisco-nom">
+                                        Nom
+                                    </label>
+                                    <input type="text" id="cisco-form-nom" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                </div>
+                                <div class="flex justify-end space-x-3">
+                                    <button type="button" onclick="closeCiscoModal()" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300">Annuler</button>
+                                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Enregistrer</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- ZAP Modal -->
+                <div id="zap-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+                    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                        <div class="mt-3">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4" id="zap-modal-title">Ajouter un ZAP</h3>
+                            <form id="zap-form">
+                                <input type="hidden" id="zap-form-id">
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="zap-id">
+                                        ID
+                                    </label>
+                                    <input type="text" id="zap-form-input-id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="zap-cisco">
+                                        CISCO
+                                    </label>
+                                    <select id="zap-form-cisco" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></select>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="zap-nom">
+                                        Nom
+                                    </label>
+                                    <input type="text" id="zap-form-nom" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                </div>
+                                <div class="flex justify-end space-x-3">
+                                    <button type="button" onclick="closeZapModal()" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300">Annuler</button>
+                                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Enregistrer</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script javascripts -->
+    <script src="js/script.js"></script>
+    <script src="js/circonscriptions.js"></script>
+</body>
+
+</html>

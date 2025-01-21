@@ -22,6 +22,8 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "uuid": "^11.0.5",
+    "xlsx": "^0.18.5"
   }
 }
