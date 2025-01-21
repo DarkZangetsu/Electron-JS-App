@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcryptjs');
@@ -104,6 +104,7 @@ db.serialize(() => {
   )`);
 });
 
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1920,
@@ -115,9 +116,58 @@ function createWindow() {
   });
 
   mainWindow.loadFile('login.html');
+
+  const menuTemplate = [
+    {
+      label: 'Fichier',
+      submenu: [
+        { label: 'Quitter', role: 'quit' }
+      ]
+    },
+    {
+      label: 'Édition',
+      submenu: [
+        { label: 'Annuler', role: 'undo' },
+        { label: 'Refaire', role: 'redo' },
+        { type: 'separator' },
+        { label: 'Couper', role: 'cut' },
+        { label: 'Copier', role: 'copy' },
+        { label: 'Coller', role: 'paste' }
+      ]
+    },
+    {
+      label: 'Affichage',
+      submenu: [
+        { label: 'Actualiser', role: 'reload' },
+        { label: 'Mode plein écran', role: 'togglefullscreen' }
+      ]
+    },
+    {
+      label: 'Aide',
+      submenu: [
+        { label: 'À propos', click: () => { console.log('À propos de cette application'); } }
+      ]
+    }
+  ];
+
+  const menu = Menu.buildFromTemplate(menuTemplate);
+  Menu.setApplicationMenu(menu);
 }
 
 app.whenReady().then(createWindow);
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
+  }
+});
+
 
 // Existing register handler
 ipcMain.on('register', async (event, data) => {

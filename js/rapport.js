@@ -357,52 +357,117 @@ function truncateText(text, maxLength) {
 // Excel Export Function
 exportExcelBtn.addEventListener('click', async () => {
   try {
-    if (!rapportsData || rapportsData.length === 0) {
-      alert('Aucune donnée à exporter');
-      return;
-    }
+      if (!rapportsData || rapportsData.length === 0) {
+          alert('Aucune donnée à exporter');
+          return;
+      }
 
-    const exportData = rapportsData.map(rapport => ({
-      'Date': formatDate(rapport.date),
-      'DREN': rapport.dren_nom || '',
-      'CISCO': rapport.cisco_nom || '',
-      'ZAP': rapport.zap_nom || '',
-      'Établissement': rapport.etablissement_nom || '',
-      'Situation': rapport.situation || '',
-      'Activités': rapport.activites || '',
-      'Fonction': rapport.fonction || '',
-      'Prix Unitaire': rapport.prix_unitaire || 0,
-      'Quantité': rapport.quantite || 0,
-      'Total': rapport.total || 0,
-      'Source de Financement': rapport.source_financement || '',
-      'Exécuteur': rapport.executeur || '',
-      'Superviseur': rapport.superviseur || ''
-    }));
+      // Préparer les données pour l'exportation avec numérotation
+      const exportData = rapportsData.map((rapport, index) => ({
+          'N°': index + 1,
+          'Date': formatDate(rapport.date),
+          'DREN': rapport.dren_nom || '',
+          'CISCO': rapport.cisco_nom || '',
+          'ZAP': rapport.zap_nom || '',
+          'Établissement': rapport.etablissement_nom || '',
+          'Situation': rapport.situation || '',
+          'Activités': rapport.activites || '',
+          'Fonction': rapport.fonction || '',
+          'Prix Unitaire': rapport.prix_unitaire || 0,
+          'Quantité': rapport.quantite || 0,
+          'Total': rapport.total || 0,
+          'Source de Financement': rapport.source_financement || '',
+          'Exécuteur': rapport.executeur || '',
+          'Superviseur': rapport.superviseur || ''
+      }));
 
-    const ws = XLSX.utils.json_to_sheet(exportData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Rapports');
+      // Créer un nouveau classeur
+      const wb = XLSX.utils.book_new();
+      
+      // Créer une nouvelle feuille
+      const ws = XLSX.utils.json_to_sheet(exportData);
 
-    const datePart = new Date().toISOString().split('T')[0].replace(/-/g, '');
-    const defaultPath = `Rapports_${datePart}.xlsx`;
+      // Ajuster la largeur des colonnes
+      const colWidths = [
+          { wch: 4 },   // N°
+          { wch: 12 },  // Date
+          { wch: 20 },  // DREN
+          { wch: 20 },  // CISCO
+          { wch: 20 },  // ZAP
+          { wch: 30 },  // Établissement
+          { wch: 25 },  // Situation
+          { wch: 40 },  // Activités
+          { wch: 15 },  // Fonction
+          { wch: 12 },  // Prix Unitaire
+          { wch: 10 },  // Quantité
+          { wch: 12 },  // Total
+          { wch: 25 },  // Source de Financement
+          { wch: 25 },  // Exécuteur
+          { wch: 25 }   // Superviseur
+      ];
+      ws['!cols'] = colWidths;
 
-    const saveDialog = await new Promise((resolve) => {
+      // Styliser l'en-tête
+      const headerRange = XLSX.utils.decode_range(ws['!ref']);
+      for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+          const address = XLSX.utils.encode_cell({ r: 0, c: C });
+          if (!ws[address]) continue;
+          ws[address].s = {
+              fill: { fgColor: { rgb: "CCCCCC" } },
+              font: { bold: true }
+          };
+      }
+
+      // Formater les colonnes numériques
+      exportData.forEach((_, index) => {
+          const row = index + 1; // +1 car la première ligne est l'en-tête
+          
+          // Format pour Prix Unitaire
+          const prixUnitaireCell = XLSX.utils.encode_cell({ r: row, c: 9 });
+          if (ws[prixUnitaireCell]) {
+              ws[prixUnitaireCell].z = '#,##0.00';
+          }
+          
+          // Format pour Total
+          const totalCell = XLSX.utils.encode_cell({ r: row, c: 11 });
+          if (ws[totalCell]) {
+              ws[totalCell].z = '#,##0.00';
+          }
+      });
+
+      // Ajouter la feuille au classeur
+      XLSX.utils.book_append_sheet(wb, ws, "Liste Rapports");
+
+      // Générer le nom de fichier par défaut
+      const now = new Date();
+      const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+      const defaultPath = `liste_rapports_${dateStr}.xlsx`;
+
+      // Demander à l'utilisateur où sauvegarder le fichier
       ipcRenderer.send('show-save-dialog', defaultPath);
       ipcRenderer.once('save-dialog-response', (_, result) => {
-        resolve(result);
-      });
-    });
+          if (!result.canceled && result.filePath) {
+              try {
+                  // Sauvegarder le fichier à l'emplacement choisi
+                  XLSX.writeFile(wb, result.filePath);
 
-    if (!saveDialog.canceled && saveDialog.filePath) {
-      XLSX.writeFile(wb, saveDialog.filePath);
-      alert('Export Excel réussi!');
-    }
+                  // Notification de succès
+                  const notification = document.createElement('div');
+                  notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+                  notification.textContent = 'Export Excel réussi !';
+                  document.body.appendChild(notification);
+                  setTimeout(() => notification.remove(), 3000);
+              } catch (error) {
+                  console.error('Erreur lors de l\'écriture du fichier:', error);
+                  alert('Erreur lors de la création du fichier Excel.');
+              }
+          }
+      });
   } catch (error) {
-    console.error('Erreur lors de l\'export Excel:', error);
-    alert('Erreur lors de l\'export Excel');
+      console.error('Erreur lors de l\'export Excel:', error);
+      alert('Une erreur est survenue lors de l\'export Excel');
   }
-}
-);
+});
 
 // Exposer les fonctions nécessaires globalement
 window.editRapport = editRapport;

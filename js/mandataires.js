@@ -273,7 +273,6 @@ searchInput.addEventListener('input', function(e) {
     });
 });
 
-
 // Fonction pour exporter les mandataires en Excel
 function exportMandatairesToExcel() {
     // On a besoin des données des établissements et des mandataires
@@ -285,7 +284,7 @@ function exportMandatairesToExcel() {
             etablissementResponse.data.forEach(etab => {
                 etablissementMap[etab.id] = {
                     nom: etab.nom,
-                    code: etab.code // Utilisation du code de l'établissement
+                    code: etab.code
                 };
             });
 
@@ -304,14 +303,13 @@ function exportMandatairesToExcel() {
                         // Préparer les données pour le format Excel
                         const excelData = sortedMandataires.map((mandataire, index) => {
                             const etablissement = etablissementMap[mandataire.etablissement_id];
-                            // Extraire le ZAP de l'établissement 
                             const zap = etablissement?.nom.split(' ')[0] || '';
                             
                             return {
                                 'N°': index + 1,
                                 'ZAP': zap,
                                 'Etablissement': etablissement?.nom || '',
-                                'Code': etablissement?.code || '', // Utilisation du code au lieu de l'ID
+                                'Code': etablissement?.code || '',
                                 'NOM & Prénoms': `${mandataire.nom} ${mandataire.prenom}`,
                                 'Fonction': mandataire.fonction,
                                 'CIN': mandataire.cin,
@@ -354,19 +352,31 @@ function exportMandatairesToExcel() {
                         // Ajouter la feuille au classeur
                         XLSX.utils.book_append_sheet(wb, ws, "Liste Mandataires");
 
-                        // Sauvegarder le fichier
+                        // Générer le nom de fichier par défaut
                         const now = new Date();
                         const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
-                        const fileName = `liste_mandataires_${dateStr}.xlsx`;
+                        const defaultPath = `liste_mandataires_${dateStr}.xlsx`;
 
-                        XLSX.writeFile(wb, fileName);
+                        // Demander à l'utilisateur où sauvegarder le fichier
+                        ipcRenderer.send('show-save-dialog', defaultPath);
+                        ipcRenderer.once('save-dialog-response', (_, result) => {
+                            if (!result.canceled && result.filePath) {
+                                try {
+                                    // Sauvegarder le fichier à l'emplacement choisi
+                                    XLSX.writeFile(wb, result.filePath);
 
-                        // Notification de succès
-                        const notification = document.createElement('div');
-                        notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-                        notification.textContent = 'Export Excel réussi !';
-                        document.body.appendChild(notification);
-                        setTimeout(() => notification.remove(), 3000);
+                                    // Notification de succès
+                                    const notification = document.createElement('div');
+                                    notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+                                    notification.textContent = 'Export Excel réussi !';
+                                    document.body.appendChild(notification);
+                                    setTimeout(() => notification.remove(), 3000);
+                                } catch (error) {
+                                    console.error('Erreur lors de l\'écriture du fichier:', error);
+                                    alert('Erreur lors de la création du fichier Excel.');
+                                }
+                            }
+                        });
 
                     } catch (error) {
                         console.error('Erreur lors de l\'export:', error);

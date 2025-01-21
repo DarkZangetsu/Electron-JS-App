@@ -7,7 +7,7 @@ const userForm = document.getElementById('userForm');
 const addUserBtn = document.getElementById('addUserBtn');
 const closeModal = document.getElementById('closeModal');
 const cancelBtn = document.getElementById('cancelBtn');
-const searchUser = document.getElementById('searchUser');
+const searchInput = document.getElementById('searchInput');
 const modalTitle = document.getElementById('modalTitle');
 
 // Variables
@@ -25,7 +25,7 @@ addUserBtn.addEventListener('click', () => showModal('add'));
 closeModal.addEventListener('click', hideModal);
 cancelBtn.addEventListener('click', hideModal);
 userForm.addEventListener('submit', handleSubmit);
-searchUser.addEventListener('input', handleSearch);
+searchInput.addEventListener('input', handleSearch);
 
 function loadUsers() {
     console.log('Requesting users from main process...');
@@ -34,25 +34,21 @@ function loadUsers() {
 
 function handleSearch(e) {
     const searchTerm = e.target.value.toLowerCase();
-    currentUsers = users.filter(user => 
+    const filteredUsers = users.filter(user =>
         user.username.toLowerCase().includes(searchTerm)
     );
-    renderUsers();
+    renderUsers(filteredUsers);
 }
 
 function showModal(mode, userId = null) {
     console.log('Showing modal:', mode, 'userId:', userId);
-    
+
     // Reset form first
     userForm.reset();
-    
+
     if (mode === 'edit' && userId) {
         console.log('Editing user, searching for:', userId);
-        console.log('Available users:', users);
-        
         const user = users.find(u => u.id === parseInt(userId) || u.id === userId);
-        console.log('Found user:', user);
-        
         if (user) {
             modalTitle.innerHTML = '<i class="fas fa-user-edit mr-2"></i>Modifier un utilisateur';
             document.getElementById('userId').value = user.id;
@@ -66,7 +62,7 @@ function showModal(mode, userId = null) {
         modalTitle.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Ajouter un utilisateur';
         document.getElementById('userId').value = '';
     }
-    
+
     userModal.classList.remove('hidden');
 }
 
@@ -75,15 +71,13 @@ function hideModal() {
     userForm.reset();
 }
 
-function renderUsers() {
-    console.log('Rendering users:', currentUsers);
-    
+function renderUsers(usersToRender = currentUsers) {
     if (!usersList) {
         console.error('usersList element not found!');
         return;
     }
-    
-    if (currentUsers.length === 0) {
+
+    if (usersToRender.length === 0) {
         usersList.innerHTML = `
             <tr>
                 <td colspan="2" class="px-6 py-4 text-center text-gray-500">
@@ -94,7 +88,7 @@ function renderUsers() {
         return;
     }
 
-    usersList.innerHTML = currentUsers.map(user => `
+    usersList.innerHTML = usersToRender.map(user => `
         <tr class="hover:bg-gray-50">
             <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm text-gray-900">${user.username}</div>
@@ -127,7 +121,7 @@ window.confirmDeleteUser = function(userId) {
 
 async function handleSubmit(e) {
     e.preventDefault();
-    
+
     const userId = document.getElementById('userId').value;
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
@@ -157,13 +151,11 @@ async function handleSubmit(e) {
 
 // IPC Handlers
 ipcRenderer.on('read-users-response', (event, response) => {
-    console.log('Received users response:', response);
     if (response.success) {
         users = response.users;
         currentUsers = [...users];
         renderUsers();
     } else {
-        console.error('Error loading users:', response.message);
         alert('Erreur lors du chargement des utilisateurs: ' + response.message);
     }
 });
@@ -196,6 +188,3 @@ ipcRenderer.on('delete-user-response', (event, response) => {
         alert('Erreur lors de la suppression: ' + response.message);
     }
 });
-
-// Add debugging logs
-console.log('Users.js loaded');

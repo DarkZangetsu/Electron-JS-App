@@ -62,7 +62,7 @@ ipcRenderer.on('login-response', (event, response) => {
   if (response.success) {
     showNotification('Connexion réussie! Redirection...', 'success');
     setTimeout(() => {
-      window.location.href = 'dashboard.html';
+      window.location.href = 'etablissements.html';
     }, 1500);
   } else {
     showNotification(response.message, 'error');

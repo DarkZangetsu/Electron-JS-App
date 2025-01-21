@@ -1,5 +1,6 @@
 const { ipcRenderer } = require('electron');
 const { v4: uuidv4 } = require('uuid');
+const XLSX = require('xlsx');
 
 // Éléments du DOM
 const etablissementForm = document.getElementById('etablissementForm');
@@ -9,6 +10,7 @@ const btnAdd = document.getElementById('btnAdd');
 const btnCloseModal = document.getElementById('btnCloseModal');
 const btnCancel = document.getElementById('btnCancel');
 const etablissementTableBody = document.getElementById('etablissementTableBody');
+const exportExcelBtn = document.getElementById('exportExcel');
 
 // Éléments du formulaire
 const drenSelect = document.getElementById('drenSelect');
@@ -317,6 +319,91 @@ searchInput.addEventListener('input', function(e) {
                     </tr>
                 `;
             });
+        }
+    });
+});
+
+// Excel Export Function for Établissement
+exportExcelBtn.addEventListener('click', () => {
+    ipcRenderer.send('read-etablissement');
+    ipcRenderer.once('read-etablissement-response', (event, response) => {
+        if (!response.success || response.data.length === 0) {
+            alert('Aucune donnée à exporter.');
+            return;
+        }
+
+        try {
+            const etablissementsData = response.data;
+
+            // Préparer les données pour l'exportation avec numérotation
+            const exportData = etablissementsData.map((etablissement, index) => ({
+                'N°': index + 1,
+                'DREN': etablissement.dren_nom || '',
+                'CISCO': etablissement.cisco_nom || '',
+                'ZAP': etablissement.zap_nom || '',
+                'Code': etablissement.code || '',
+                'Nom': etablissement.nom || ''
+            }));
+
+            // Créer un nouveau classeur
+            const wb = XLSX.utils.book_new();
+            
+            // Créer une nouvelle feuille
+            const ws = XLSX.utils.json_to_sheet(exportData);
+
+            // Ajuster la largeur des colonnes
+            const colWidths = [
+                { wch: 4 },  // N°
+                { wch: 20 }, // DREN
+                { wch: 20 }, // CISCO
+                { wch: 20 }, // ZAP
+                { wch: 15 }, // Code
+                { wch: 40 }  // Nom
+            ];
+            ws['!cols'] = colWidths;
+
+            // Styliser l'en-tête
+            const headerRange = XLSX.utils.decode_range(ws['!ref']);
+            for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+                const address = XLSX.utils.encode_cell({ r: 0, c: C });
+                if (!ws[address]) continue;
+                ws[address].s = {
+                    fill: { fgColor: { rgb: "CCCCCC" } },
+                    font: { bold: true }
+                };
+            }
+
+            // Ajouter la feuille au classeur
+            XLSX.utils.book_append_sheet(wb, ws, "Liste Établissements");
+
+            // Générer le nom de fichier par défaut
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+            const defaultPath = `liste_etablissements_${dateStr}.xlsx`;
+
+            // Demander à l'utilisateur où sauvegarder le fichier
+            ipcRenderer.send('show-save-dialog', defaultPath);
+            ipcRenderer.once('save-dialog-response', (_, result) => {
+                if (!result.canceled && result.filePath) {
+                    try {
+                        // Sauvegarder le fichier à l'emplacement choisi
+                        XLSX.writeFile(wb, result.filePath);
+
+                        // Notification de succès
+                        const notification = document.createElement('div');
+                        notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+                        notification.textContent = 'Export Excel réussi !';
+                        document.body.appendChild(notification);
+                        setTimeout(() => notification.remove(), 3000);
+                    } catch (error) {
+                        console.error('Erreur lors de l\'écriture du fichier:', error);
+                        alert('Erreur lors de la création du fichier Excel.');
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Erreur lors de la préparation des données:', error);
+            alert('Erreur lors de la préparation des données pour l\'export.');
         }
     });
 });

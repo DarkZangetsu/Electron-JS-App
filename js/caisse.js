@@ -1,6 +1,7 @@
 // Import required Electron modules
 const { ipcRenderer } = require('electron');
 const { v4: uuidv4 } = require('uuid');
+const XLSX = require('xlsx');
 
 // DOM Elements
 const addNewBtn = document.getElementById('addNewBtn');
@@ -17,6 +18,8 @@ const montantInput = document.getElementById('montantInput');
 const resetButton = document.getElementById('resetButton');
 const caisseTableBody = document.getElementById('caisseTableBody');
 const searchInput = document.getElementById('searchInput');
+const exportExcelBtn = document.getElementById('exportExcel');
+exportExcelBtn.addEventListener('click', exportCaisseToExcel);
 
 
 // Show/Hide Form
@@ -358,3 +361,143 @@ searchInput.addEventListener('input', function(e) {
       }
   });
 });
+
+
+// Export Excel Function for Caisse
+function exportCaisseToExcel() {
+  // On a besoin des données des établissements et de la caisse
+  ipcRenderer.send('read-etablissement');
+  ipcRenderer.once('read-etablissement-response', (event, etablissementResponse) => {
+      if (etablissementResponse.success) {
+          // Créer un map des établissements pour un accès facile
+          const etablissementMap = {};
+          etablissementResponse.data.forEach(etab => {
+              etablissementMap[etab.id] = {
+                  nom: etab.nom,
+                  dren_nom: etab.dren_nom,
+                  cisco_nom: etab.cisco_nom,
+                  zap_nom: etab.zap_nom
+              };
+          });
+
+          // Récupérer les données de la caisse
+          ipcRenderer.send('read-caisse');
+          ipcRenderer.once('read-caisse-response', (event, response) => {
+              if (!response.success || response.data.length === 0) {
+                  alert('Aucune donnée à exporter');
+                  return;
+              }
+
+              try {
+                  // Préparer les données pour l'exportation avec numérotation
+                  const exportData = response.data.map((caisse, index) => {
+                      const etablissement = etablissementMap[caisse.etablissement_id];
+                      return {
+                          'N°': index + 1,
+                          'DREN': etablissement?.dren_nom || '',
+                          'CISCO': etablissement?.cisco_nom || '',
+                          'ZAP': etablissement?.zap_nom || '',
+                          'Établissement': etablissement?.nom || '',
+                          'Montant (Ar)': caisse.montant_ariary || 0
+                      };
+                  });
+
+                  // Créer un nouveau classeur
+                  const wb = XLSX.utils.book_new();
+                  
+                  // Créer une nouvelle feuille
+                  const ws = XLSX.utils.json_to_sheet(exportData);
+
+                  // Ajuster la largeur des colonnes
+                  const colWidths = [
+                      { wch: 4 },   // N°
+                      { wch: 20 },  // DREN
+                      { wch: 20 },  // CISCO
+                      { wch: 20 },  // ZAP
+                      { wch: 40 },  // Établissement
+                      { wch: 15 }   // Montant
+                  ];
+                  ws['!cols'] = colWidths;
+
+                  // Styliser l'en-tête
+                  const headerRange = XLSX.utils.decode_range(ws['!ref']);
+                  for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+                      const address = XLSX.utils.encode_cell({ r: 0, c: C });
+                      if (!ws[address]) continue;
+                      ws[address].s = {
+                          fill: { fgColor: { rgb: "CCCCCC" } },
+                          font: { bold: true }
+                      };
+                  }
+
+                  // Formater la colonne montant
+                  exportData.forEach((_, index) => {
+                      const row = index + 1; // +1 car la première ligne est l'en-tête
+                      const montantCell = XLSX.utils.encode_cell({ r: row, c: 5 }); // colonne Montant
+                      if (ws[montantCell]) {
+                          ws[montantCell].z = '#,##0.00';
+                      }
+                  });
+
+                  // Ajouter un total en bas
+                  const totalRow = {
+                      'N°': '',
+                      'DREN': '',
+                      'CISCO': '',
+                      'ZAP': '',
+                      'Établissement': 'TOTAL',
+                      'Montant (Ar)': exportData.reduce((sum, row) => sum + (row['Montant (Ar)'] || 0), 0)
+                  };
+                  XLSX.utils.sheet_add_json(ws, [totalRow], { skipHeader: true, origin: -1 });
+
+                  // Styliser la ligne de total
+                  const totalRowIndex = exportData.length + 1;
+                  const totalRange = XLSX.utils.decode_range(ws['!ref']);
+                  for (let C = totalRange.s.c; C <= totalRange.e.c; ++C) {
+                      const address = XLSX.utils.encode_cell({ r: totalRowIndex, c: C });
+                      if (ws[address]) {
+                          ws[address].s = {
+                              font: { bold: true },
+                              fill: { fgColor: { rgb: "E6E6E6" } }
+                          };
+                      }
+                  }
+
+                  // Ajouter la feuille au classeur
+                  XLSX.utils.book_append_sheet(wb, ws, "Situation Caisse");
+
+                  // Générer le nom de fichier par défaut
+                  const now = new Date();
+                  const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+                  const defaultPath = `situation_caisse_${dateStr}.xlsx`;
+
+                  // Demander à l'utilisateur où sauvegarder le fichier
+                  ipcRenderer.send('show-save-dialog', defaultPath);
+                  ipcRenderer.once('save-dialog-response', (_, result) => {
+                      if (!result.canceled && result.filePath) {
+                          try {
+                              // Sauvegarder le fichier à l'emplacement choisi
+                              XLSX.writeFile(wb, result.filePath);
+
+                              // Notification de succès
+                              const notification = document.createElement('div');
+                              notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+                              notification.textContent = 'Export Excel réussi !';
+                              document.body.appendChild(notification);
+                              setTimeout(() => notification.remove(), 3000);
+                          } catch (error) {
+                              console.error('Erreur lors de l\'écriture du fichier:', error);
+                              alert('Erreur lors de la création du fichier Excel.');
+                          }
+                      }
+                  });
+              } catch (error) {
+                  console.error('Erreur lors de l\'export:', error);
+                  alert('Une erreur est survenue lors de l\'export Excel');
+              }
+          });
+      } else {
+          alert('Erreur lors de la récupération des données des établissements');
+      }
+  });
+}
