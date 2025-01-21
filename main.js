@@ -175,6 +175,145 @@ ipcMain.on('login', async (event, data) => {
 });
 
 
+// Read all users
+ipcMain.on('read-users', (event) => {
+  console.log('Main process received read-users request');
+  
+  db.all('SELECT id, username FROM users', (err, rows) => {
+    console.log('Database query completed');
+    if (err) {
+      console.error('Database error:', err);
+      event.reply('read-users-response', {
+        success: false,
+        message: 'Database error',
+        error: err
+      });
+    } else {
+      console.log('Found users:', rows);
+      event.reply('read-users-response', {
+        success: true,
+        message: 'Users retrieved successfully',
+        users: rows
+      });
+    }
+  });
+})
+// Read single user
+ipcMain.on('read-user', (event, data) => {
+  const { id } = data;
+  db.get('SELECT id, username FROM users WHERE id = ?', [id], (err, row) => {
+    if (err) {
+      event.reply('read-user-response', {
+        success: false,
+        message: 'Database error',
+        error: err
+      });
+    } else if (!row) {
+      event.reply('read-user-response', {
+        success: false,
+        message: 'User not found'
+      });
+    } else {
+      event.reply('read-user-response', {
+        success: true,
+        message: 'User retrieved successfully',
+        user: row
+      });
+    }
+  });
+});
+
+// Update user
+ipcMain.on('update-user', async (event, data) => {
+  const { id, username, password } = data;
+  
+  try {
+    // If password is provided, hash it
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      db.run(
+        'UPDATE users SET username = ?, password = ? WHERE id = ?',
+        [username, hashedPassword, id],
+        function(err) {
+          if (err) {
+            event.reply('update-user-response', {
+              success: false,
+              message: err.message.includes('UNIQUE') ? 'Username already exists' : 'Database error',
+              error: err
+            });
+          } else if (this.changes === 0) {
+            event.reply('update-user-response', {
+              success: false,
+              message: 'User not found'
+            });
+          } else {
+            event.reply('update-user-response', {
+              success: true,
+              message: 'User updated successfully'
+            });
+          }
+        }
+      );
+    } else {
+      // If no password provided, only update username
+      db.run(
+        'UPDATE users SET username = ? WHERE id = ?',
+        [username, id],
+        function(err) {
+          if (err) {
+            event.reply('update-user-response', {
+              success: false,
+              message: err.message.includes('UNIQUE') ? 'Username already exists' : 'Database error',
+              error: err
+            });
+          } else if (this.changes === 0) {
+            event.reply('update-user-response', {
+              success: false,
+              message: 'User not found'
+            });
+          } else {
+            event.reply('update-user-response', {
+              success: true,
+              message: 'User updated successfully'
+            });
+          }
+        }
+      );
+    }
+  } catch (err) {
+    event.reply('update-user-response', {
+      success: false,
+      message: 'Error processing request',
+      error: err
+    });
+  }
+});
+
+// Delete user
+ipcMain.on('delete-user', (event, data) => {
+  const { id } = data;
+  db.run('DELETE FROM users WHERE id = ?', [id], function(err) {
+    if (err) {
+      event.reply('delete-user-response', {
+        success: false,
+        message: 'Database error',
+        error: err
+      });
+    } else if (this.changes === 0) {
+      event.reply('delete-user-response', {
+        success: false,
+        message: 'User not found'
+      });
+    } else {
+      event.reply('delete-user-response', {
+        success: true,
+        message: 'User deleted successfully'
+      });
+    }
+  });
+});
+
+
 // CRUD Operations for DREN
 ipcMain.on('create-dren', (event, data) => {
   const { id, nom } = data;
